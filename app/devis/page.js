@@ -15,9 +15,7 @@ const [acomptes, setAcomptes] = useState([
 const [devisList, setDevisList] = useState([])
 const [message, setMessage] = useState('')
 
-useEffect(() => {
-chargerDonnees()
-}, [])
+useEffect(() => { chargerDonnees() }, [])
 
 async function chargerDonnees() {
 const { data: { user } } = await supabase.auth.getUser()
@@ -32,22 +30,17 @@ async function creerDevis() {
 const { data: { user } } = await supabase.auth.getUser()
 const numero = 'D-' + Date.now()
 const total = parseFloat(montantTotal)
-
-const { data: devis, error } = await supabase
-.from('devis')
-.insert([{ user_id: user.id, client_id: clientId, numero, description, montant_total: total, statut: 'en_attente' }])
-.select().single()
-
+const { data: devis, error } = await supabase.from('devis').insert([{
+user_id: user.id, client_id: clientId, numero,
+description, montant_total: total, statut: 'en_attente'
+}]).select().single()
 if (error) { setMessage('Erreur : ' + error.message); return }
-
-const acomptesData = acomptes.map(a => ({
+await supabase.from('acomptes').insert(acomptes.map(a => ({
 devis_id: devis.id,
 pourcentage: a.pourcentage,
 montant: (total * a.pourcentage / 100),
 statut: 'non_facture'
-}))
-
-await supabase.from('acomptes').insert(acomptesData)
+})))
 setMessage('Devis ' + numero + ' créé ✅')
 setDescription(''); setMontantTotal(''); setClientId('')
 chargerDonnees()
@@ -61,79 +54,147 @@ if (!acompte || acompte.statut === 'facture') {
 setMessage('Cet acompte a déjà été facturé !')
 return
 }
-
 const numero = 'F-' + Date.now()
-const { data: facture } = await supabase
-.from('factures')
-.insert([{
-user_id: user.id,
-client_id: devis.client_id,
-numero,
+const { data: facture } = await supabase.from('factures').insert([{
+user_id: user.id, client_id: devis.client_id, numero,
 total_htva: acompte.montant / 1.21,
 total_tva: acompte.montant - acompte.montant / 1.21,
-total_tvac: acompte.montant,
-statut: 'envoyee'
-}])
-.select().single()
-
+total_tvac: acompte.montant, statut: 'envoyee'
+}]).select().single()
 await supabase.from('lignes_facture').insert([{
 facture_id: facture.id,
 description: 'Acompte ' + acompte.pourcentage + '% — ' + devis.description,
-quantite: 1,
-prix_unitaire: acompte.montant / 1.21,
-taux_tva: 21
+quantite: 1, prix_unitaire: acompte.montant / 1.21, taux_tva: 21
 }])
-
 await supabase.from('acomptes').update({ statut: 'facture', facture_id: facture.id }).eq('id', acompte.id)
 setMessage('Facture acompte ' + acompte.pourcentage + '% créée ✅')
 chargerDonnees()
 }
 
+const navStyle = {
+background: 'rgba(15,12,41,0.95)',
+backdropFilter: 'blur(20px)',
+borderBottom: '1px solid rgba(255,255,255,0.08)',
+padding: '16px 32px',
+display: 'flex',
+justifyContent: 'space-between',
+alignItems: 'center',
+position: 'sticky',
+top: 0,
+zIndex: 100
+}
+
+const linkStyle = {
+color: 'rgba(255,255,255,0.6)',
+textDecoration: 'none',
+fontSize: '14px',
+fontWeight: '500',
+padding: '8px 16px',
+borderRadius: '8px'
+}
+
+const inputStyle = {
+width: '100%',
+padding: '14px 16px',
+background: 'rgba(255,255,255,0.08)',
+border: '1px solid rgba(255,255,255,0.15)',
+borderRadius: '12px',
+color: 'white',
+fontSize: '15px',
+outline: 'none',
+boxSizing: 'border-box',
+marginBottom: '12px'
+}
+
 return (
-<div className="min-h-screen bg-blue-50">
-<nav className="bg-white shadow p-4 flex justify-between items-center">
-<h1 className="text-xl font-bold text-blue-700">BelFacture</h1>
-<div className="flex gap-4">
-<a href="/dashboard" className="text-blue-600 hover:underline">Dashboard</a>
-<a href="/clients" className="text-blue-600 hover:underline">Clients</a>
-<a href="/factures" className="text-blue-600 hover:underline">Factures</a>
-<a href="/devis" className="text-blue-600 font-bold">Devis</a>
+<div style={{
+minHeight: '100vh',
+background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
+fontFamily: "'Segoe UI', sans-serif"
+}}>
+<nav style={navStyle}>
+<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+<div style={{
+background: 'linear-gradient(135deg, #667eea, #764ba2)',
+borderRadius: '10px',
+width: '36px',
+height: '36px',
+display: 'flex',
+alignItems: 'center',
+justifyContent: 'center',
+fontSize: '18px'
+}}>⚡</div>
+<span style={{
+fontWeight: '800',
+fontSize: '18px',
+background: 'linear-gradient(135deg, #667eea, #a78bfa)',
+WebkitBackgroundClip: 'text',
+WebkitTextFillColor: 'transparent'
+}}>BelFacture</span>
+</div>
+<div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+<a href="/dashboard" style={linkStyle}>Dashboard</a>
+<a href="/clients" style={linkStyle}>Clients</a>
+<a href="/factures" style={linkStyle}>Factures</a>
+<a href="/devis" style={{ ...linkStyle, color: 'white', background: 'rgba(102,126,234,0.2)' }}>Devis</a>
 </div>
 </nav>
 
-<div className="max-w-4xl mx-auto p-6">
-<h2 className="text-2xl font-bold text-gray-800 mb-6">Devis & Acomptes</h2>
+<div style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
+<h1 style={{ fontSize: '32px', fontWeight: '800', color: 'white', marginBottom: '32px' }}>
+📋 Devis & Acomptes
+</h1>
 
-<div className="bg-white rounded-xl shadow p-6 mb-6">
-<h3 className="text-lg font-bold mb-4">Créer un devis</h3>
-<select
-value={clientId}
-onChange={(e) => setClientId(e.target.value)}
-className="w-full border rounded-lg p-3 mb-3"
->
+<div style={{
+background: 'rgba(255,255,255,0.05)',
+backdropFilter: 'blur(20px)',
+border: '1px solid rgba(255,255,255,0.08)',
+borderRadius: '20px',
+padding: '32px',
+marginBottom: '24px'
+}}>
+<h3 style={{ color: 'white', fontWeight: '700', marginBottom: '20px', fontSize: '18px' }}>
+➕ Créer un devis
+</h3>
+
+<select value={clientId} onChange={(e) => setClientId(e.target.value)} style={inputStyle}>
 <option value="">Choisir un client</option>
-{clients.map(c => (
-<option key={c.id} value={c.id}>{c.nom}</option>
-))}
+{clients.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
 </select>
+
 <input
-placeholder="Description du chantier (ex: Installation électrique)"
+placeholder="Description du chantier (ex: Installation électrique complète)"
 value={description}
 onChange={(e) => setDescription(e.target.value)}
-className="w-full border rounded-lg p-3 mb-3"
+style={inputStyle}
 />
+
 <input
 type="number"
 placeholder="Montant total TVAC (€)"
 value={montantTotal}
 onChange={(e) => setMontantTotal(e.target.value)}
-className="w-full border rounded-lg p-3 mb-4"
+style={inputStyle}
 />
 
-<h4 className="font-bold mb-2">Acomptes :</h4>
+<h4 style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', marginBottom: '12px' }}>
+Répartition des acomptes
+</h4>
+
 {acomptes.map((a, i) => (
-<div key={i} className="flex items-center gap-3 mb-2">
-<span className="text-gray-600">Acompte {i + 1} :</span>
+<div key={i} style={{
+display: 'flex',
+alignItems: 'center',
+gap: '12px',
+marginBottom: '10px',
+background: 'rgba(255,255,255,0.04)',
+padding: '12px 16px',
+borderRadius: '12px',
+border: '1px solid rgba(255,255,255,0.06)'
+}}>
+<span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', minWidth: '80px' }}>
+Acompte {i + 1}
+</span>
 <input
 type="number"
 value={a.pourcentage}
@@ -142,48 +203,114 @@ const na = [...acomptes]
 na[i].pourcentage = parseFloat(e.target.value)
 setAcomptes(na)
 }}
-className="border rounded-lg p-2 w-20"
+style={{
+width: '70px',
+padding: '8px 12px',
+background: 'rgba(255,255,255,0.08)',
+border: '1px solid rgba(255,255,255,0.15)',
+borderRadius: '8px',
+color: 'white',
+fontSize: '14px',
+outline: 'none',
+textAlign: 'center'
+}}
 />
-<span>%</span>
+<span style={{ color: 'rgba(255,255,255,0.4)' }}>%</span>
 {montantTotal && (
-<span className="text-blue-600 font-semibold">
-= {(parseFloat(montantTotal) * a.pourcentage / 100).toFixed(2)}€
+<span style={{
+marginLeft: 'auto',
+color: '#34d399',
+fontWeight: '700',
+fontSize: '16px'
+}}>
+{(parseFloat(montantTotal) * a.pourcentage / 100).toFixed(2)}€
 </span>
 )}
 </div>
 ))}
 
-<button
-onClick={creerDevis}
-className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mt-4 hover:bg-blue-700"
->
+<button onClick={creerDevis} style={{
+width: '100%',
+padding: '16px',
+background: 'linear-gradient(135deg, #667eea, #764ba2)',
+border: 'none',
+borderRadius: '14px',
+color: 'white',
+fontSize: '16px',
+fontWeight: '700',
+cursor: 'pointer',
+marginTop: '16px',
+boxShadow: '0 4px 20px rgba(102,126,234,0.4)'
+}}>
 Créer le devis
 </button>
-{message && <p className="mt-3 text-green-600 font-semibold">{message}</p>}
+
+{message && (
+<p style={{ marginTop: '12px', color: '#34d399', textAlign: 'center', fontWeight: '600' }}>
+{message}
+</p>
+)}
 </div>
 
-<div className="bg-white rounded-xl shadow p-6">
-<h3 className="text-lg font-bold mb-4">Mes devis</h3>
+<div style={{
+background: 'rgba(255,255,255,0.05)',
+backdropFilter: 'blur(20px)',
+border: '1px solid rgba(255,255,255,0.08)',
+borderRadius: '20px',
+padding: '32px'
+}}>
+<h3 style={{ color: 'white', fontWeight: '700', marginBottom: '20px', fontSize: '18px' }}>
+📁 Mes devis
+</h3>
 {devisList.length === 0 ? (
-<p className="text-gray-400 text-center py-4">Aucun devis pour le moment</p>
+<p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '32px' }}>
+Aucun devis pour le moment
+</p>
 ) : (
 devisList.map((devis) => (
-<div key={devis.id} className="border rounded-xl p-4 mb-4">
-<div className="flex justify-between items-center mb-3">
+<div key={devis.id} style={{
+background: 'rgba(255,255,255,0.04)',
+border: '1px solid rgba(255,255,255,0.08)',
+borderRadius: '16px',
+padding: '20px',
+marginBottom: '16px'
+}}>
+<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
 <div>
-<p className="font-bold text-gray-800">{devis.numero}</p>
-<p className="text-gray-500 text-sm">{devis.clients?.nom} — {devis.description}</p>
-<p className="text-blue-600 font-semibold">{devis.montant_total}€ TVAC</p>
+<p style={{ color: 'white', fontWeight: '700', margin: '0 0 4px', fontSize: '16px' }}>
+{devis.numero}
+</p>
+<p style={{ color: 'rgba(255,255,255,0.5)', margin: '0 0 4px', fontSize: '13px' }}>
+{devis.clients?.nom} — {devis.description}
+</p>
 </div>
+<span style={{ color: '#34d399', fontWeight: '800', fontSize: '20px' }}>
+{devis.montant_total}€
+</span>
 </div>
-<div className="grid grid-cols-3 gap-2">
+
+<p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '12px' }}>
+👇 Clique sur un bouton quand le client a payé cet acompte pour générer la facture
+</p>
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
 {[0, 1, 2].map((i) => (
 <button
 key={i}
 onClick={() => transformerEnFacture(devis, i)}
-className="bg-green-500 text-white py-2 px-3 rounded-lg text-sm hover:bg-green-600"
+style={{
+padding: '12px 8px',
+background: 'linear-gradient(135deg, #34d39922, #05966922)',
+border: '1px solid rgba(52,211,153,0.3)',
+borderRadius: '10px',
+color: '#34d399',
+fontSize: '12px',
+fontWeight: '600',
+cursor: 'pointer',
+lineHeight: '1.4'
+}}
 >
-Facturer acompte {i + 1}
+✅ Client a payé<br/>l'acompte {i + 1}<br/>→ Créer facture
 </button>
 ))}
 </div>
