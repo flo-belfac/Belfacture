@@ -1,374 +1,335 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
+import { supabase } from './lib/supabase'
 
-export default function Home() {
-return (
-<div style={{
-minHeight: '100vh',
-background: 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
-fontFamily: "'Segoe UI', sans-serif",
-color: 'white'
-}}>
+export default function HomePage() {
+  const [submitted, setSubmitted] = useState(false)
+  const [email, setEmail] = useState('')
+  const [sending, setSending] = useState(false)
 
-{/* NAVBAR */}
-<nav style={{
-display: 'flex',
-justifyContent: 'space-between',
-alignItems: 'center',
-padding: '20px 48px',
-borderBottom: '1px solid rgba(255,255,255,0.06)'
-}}>
-<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-<div style={{
-background: 'linear-gradient(135deg, #667eea, #764ba2)',
-borderRadius: '10px',
-width: '36px',
-height: '36px',
-display: 'flex',
-alignItems: 'center',
-justifyContent: 'center',
-fontSize: '18px'
-}}>⚡</div>
-<span style={{
-fontWeight: '800',
-fontSize: '20px',
-background: 'linear-gradient(135deg, #667eea, #a78bfa)',
-WebkitBackgroundClip: 'text',
-WebkitTextFillColor: 'transparent'
-}}>BelFacture</span>
-</div>
-<div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-<Link href="/login" style={{
-color: 'rgba(255,255,255,0.6)',
-textDecoration: 'none',
-fontSize: '14px',
-fontWeight: '500'
-}}>
-Se connecter
-</Link>
-<Link href="/login" style={{
-background: 'linear-gradient(135deg, #667eea, #764ba2)',
-color: 'white',
-textDecoration: 'none',
-padding: '10px 24px',
-borderRadius: '10px',
-fontSize: '14px',
-fontWeight: '700',
-boxShadow: '0 4px 15px rgba(102,126,234,0.4)'
-}}>
-Essayer gratuitement →
-</Link>
-</div>
-</nav>
+  const Logo = ({ size = 36 }: { size?: number }) => (
+    <span className="logo-b" style={{ width: size, height: size, borderRadius: size * 0.32 }}>
+      <span className="ring" />
+      <span className="ring" />
+      <span className="core" />
+    </span>
+  )
 
-{/* HERO */}
-<div style={{
-textAlign: 'center',
-padding: '100px 24px 80px',
-maxWidth: '800px',
-margin: '0 auto'
-}}>
-<div style={{
-display: 'inline-block',
-background: 'rgba(102,126,234,0.15)',
-border: '1px solid rgba(102,126,234,0.3)',
-borderRadius: '20px',
-padding: '8px 20px',
-fontSize: '13px',
-color: '#a78bfa',
-marginBottom: '32px',
-fontWeight: '600'
-}}>
-🇧🇪 Obligatoire depuis janvier 2026 — Peppol Belgique
-</div>
+  async function handleWaitlist(e: React.FormEvent) {
+    e.preventDefault()
+    setSending(true)
+    await supabase.from('waitlist').insert([{ email }])
+    setSubmitted(true)
+    setSending(false)
+  }
 
-<h1 style={{
-fontSize: '56px',
-fontWeight: '900',
-lineHeight: '1.1',
-marginBottom: '24px',
-background: 'linear-gradient(135deg, #ffffff, #a78bfa)',
-WebkitBackgroundClip: 'text',
-WebkitTextFillColor: 'transparent'
-}}>
-Envoyez vos factures<br />électroniques en<br />60 secondes
-</h1>
+  return (
+    <>
+      <style>{`
+        :root{--bg:#15110d;--bg-2:#1b160f;--surface:#211a13;--line:#332a1f;--text:#f2ebdc;--muted:#9a8e7c;--accent:#db6e44;--ink:#15110d;}
+        body{background:var(--bg);color:var(--text);font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+        .display{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-0.01em;line-height:1.0;}
+        .display-light{font-family:'Instrument Serif',serif;font-weight:400;}
+        .italic-accent{font-style:italic;color:var(--accent);font-family:'Instrument Serif',serif;}
+        .accent{color:var(--accent);}
+        .eyebrow{font-family:'Figtree',sans-serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+        .grain{background-image:radial-gradient(rgba(255,255,255,0.03) 1px,transparent 1px);background-size:4px 4px;}
+        .btn-primary{background:var(--accent);color:var(--ink);font-weight:700;border-radius:13px;padding:14px 22px;display:inline-block;transition:transform .2s,filter .2s;}
+        .btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px);}
+        .btn-ghost{color:var(--text);border:1.5px solid var(--line);background:transparent;border-radius:13px;padding:13px 22px;display:inline-block;transition:all .2s;}
+        .btn-ghost:hover{border-color:var(--accent);}
+        .btn-on-accent{background:var(--ink);color:var(--text);font-weight:600;border-radius:13px;padding:14px 22px;display:inline-block;transition:transform .2s;border:none;cursor:pointer;font-family:'Figtree',sans-serif;font-size:15px;}
+        .btn-on-accent:hover{transform:translateY(-2px);}
+        .card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;transition:transform .2s,border-color .2s;}
+        .card:hover{transform:translateY(-3px);border-color:var(--accent);}
+        .card-pop{background:var(--accent);color:var(--ink);border-radius:18px;}
+        .check{width:20px;height:20px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(219,110,68,.18);color:var(--accent);font-size:12px;flex-shrink:0;font-weight:700;}
+        .check-ink{width:20px;height:20px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:rgba(21,17,13,.18);color:var(--ink);font-size:12px;flex-shrink:0;font-weight:700;}
+        .rule{height:1.5px;background:var(--line);}
+        details>summary{list-style:none;cursor:pointer;}
+        details>summary::-webkit-details-marker{display:none;}
+        details[open] .plus{transform:rotate(45deg);}
+        .plus{transition:transform .2s;display:inline-block;}
+        @keyframes rise{to{opacity:1;transform:none;}}
+        .rise{opacity:0;transform:translateY(10px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards;}
+        .d1{animation-delay:.05s;}.d2{animation-delay:.13s;}.d3{animation-delay:.21s;}.d4{animation-delay:.29s;}
+        .tag{background:rgba(219,110,68,.13);color:var(--accent);border-radius:999px;padding:5px 13px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:8px;}
+        .pulse{width:7px;height:7px;border-radius:999px;background:var(--accent);animation:pulse 2.2s infinite;}
+        @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(219,110,68,.5);}70%{box-shadow:0 0 0 8px rgba(219,110,68,0);}100%{box-shadow:0 0 0 0 rgba(219,110,68,0);}}
+        .logo-b{position:relative;display:inline-flex;align-items:center;justify-content:center;background:var(--accent);}
+        .logo-b .core{width:7px;height:7px;border-radius:999px;background:#f4eddd;position:relative;z-index:2;}
+        .logo-b .ring{position:absolute;width:9px;height:9px;border-radius:999px;border:1.5px solid #f4eddd;animation:ripple 2.4s ease-out infinite;}
+        .logo-b .ring:nth-child(2){animation-delay:1.2s;}
+        @keyframes ripple{0%{transform:scale(.6);opacity:.85;}100%{transform:scale(2.8);opacity:0;}}
+        .wl-input:focus{border-color:var(--ink) !important;outline:none;}
+      `}</style>
 
-<p style={{
-fontSize: '20px',
-color: 'rgba(255,255,255,0.5)',
-marginBottom: '48px',
-lineHeight: '1.6'
-}}>
-BelFacture met les indépendants belges en conformité avec la loi Peppol 2026.<br />
-Simple, rapide, 100% belge. Sans stress, sans comptable.
-</p>
+      {/* HEADER */}
+      <header className="sticky top-0 z-30" style={{ background: 'rgba(21,17,13,.8)', backdropFilter: 'blur(12px)', borderBottom: '1.5px solid var(--line)' }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <Logo />
+            <span className="display text-2xl">BelFacture</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: 'var(--muted)' }}>
+            <a href="#aujourdhui" className="hover:text-white transition">Le produit</a>
+            <a href="#roadmap" className="hover:text-white transition">Peppol</a>
+            <a href="#tarifs" className="hover:text-white transition">Tarifs</a>
+            <a href="#faq" className="hover:text-white transition">FAQ</a>
+          </nav>
+          <div className="flex items-center gap-2">
+            <Link href="/login" className="text-sm font-medium hidden sm:inline-block px-3 py-2" style={{ color: 'var(--muted)' }}>Se connecter</Link>
+            <a href="#waitlist" className="btn-primary text-sm">Réserver</a>
+          </div>
+        </div>
+      </header>
 
-<div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-<Link href="/login" style={{
-background: 'linear-gradient(135deg, #667eea, #764ba2)',
-color: 'white',
-textDecoration: 'none',
-padding: '18px 40px',
-borderRadius: '14px',
-fontSize: '18px',
-fontWeight: '700',
-boxShadow: '0 8px 30px rgba(102,126,234,0.5)'
-}}>
-Commencer gratuitement →
-</Link>
-<a href="#features" style={{
-background: 'rgba(255,255,255,0.06)',
-border: '1px solid rgba(255,255,255,0.12)',
-color: 'white',
-textDecoration: 'none',
-padding: '18px 40px',
-borderRadius: '14px',
-fontSize: '18px',
-fontWeight: '600'
-}}>
-En savoir plus
-</a>
-</div>
-</div>
+      {/* HERO */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 grain pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-24 lg:pt-28 lg:pb-36 relative">
+          <div className="tag rise d1"><span className="pulse" /> Obligatoire en Belgique depuis janvier 2026</div>
+          <h1 className="display mt-7 rise d2" style={{ fontSize: 'clamp(58px,11vw,134px)' }}>
+            Vos factures,<br /><span className="italic-accent">prêtes</span> pour Peppol.
+          </h1>
+          <p className="mt-8 max-w-xl text-lg leading-relaxed rise d3" style={{ color: 'var(--muted)' }}>
+            Créez vos factures, gérez vos clients, suivez vos devis et acomptes. L&apos;envoi automatique sur le réseau Peppol arrive bientôt — verrouillez votre tarif anticipé dès aujourd&apos;hui.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-3 rise d4">
+            <a href="#waitlist" className="btn-primary">Réserver mon accès anticipé →</a>
+            <a href="#aujourdhui" className="btn-ghost">Voir le produit</a>
+          </div>
+        </div>
+      </section>
 
-{/* ALERTE AMENDE */}
-<div style={{
-maxWidth: '700px',
-margin: '0 auto 80px',
-background: 'rgba(248,113,113,0.08)',
-border: '1px solid rgba(248,113,113,0.25)',
-borderRadius: '20px',
-padding: '24px 32px',
-textAlign: 'center'
-}}>
-<p style={{ margin: 0, fontSize: '16px', color: '#fca5a5' }}>
-⚠️ Sans logiciel Peppol conforme, vous risquez jusqu'à <strong style={{ color: '#f87171' }}>5.000€ d'amende</strong> par infraction. BelFacture vous protège.
-</p>
-</div>
+      <div className="rule" />
 
-{/* FEATURES */}
-<div id="features" style={{
-maxWidth: '1100px',
-margin: '0 auto',
-padding: '0 24px 100px'
-}}>
-<h2 style={{
-textAlign: 'center',
-fontSize: '36px',
-fontWeight: '800',
-marginBottom: '16px'
-}}>
-Tout ce dont vous avez besoin
-</h2>
-<p style={{
-textAlign: 'center',
-color: 'rgba(255,255,255,0.4)',
-marginBottom: '64px',
-fontSize: '16px'
-}}>
-Une app simple qui fait tout le travail pour vous
-</p>
+      {/* CONTEXTE */}
+      <section className="py-24 lg:py-32" style={{ background: 'var(--bg-2)' }}>
+        <div className="max-w-5xl mx-auto px-6 lg:px-8 grid lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-5">
+            <div className="eyebrow">Le contexte</div>
+            <h2 className="display mt-4" style={{ fontSize: 'clamp(42px,5.5vw,70px)' }}>Le compte à rebours <span className="italic-accent">a commencé.</span></h2>
+          </div>
+          <div className="lg:col-span-6 lg:col-start-7">
+            <p className="text-xl leading-relaxed">
+              Depuis le 1<sup>er</sup> janvier 2026, toute facture B2B entre entreprises belges assujetties à la TVA doit transiter par <span className="accent" style={{ fontWeight: 600 }}>Peppol</span>, le réseau électronique européen.
+            </p>
+            <p className="mt-5 text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>
+              Le PDF par email ne suffit plus. La règle s&apos;applique même aux indépendants sous franchise de TVA.
+            </p>
+            <p className="mt-7 text-sm" style={{ color: 'var(--muted)' }}>
+              Les obligations exactes sont fixées par le SPF Finances. BelFacture est en cours d&apos;intégration avec un Access Point Peppol agréé.
+            </p>
+          </div>
+        </div>
+      </section>
 
-<div style={{
-display: 'grid',
-gridTemplateColumns: 'repeat(3, 1fr)',
-gap: '24px',
-marginBottom: '48px'
-}}>
-{[
-{ icon: '⚡', title: 'Envoi Peppol officiel', desc: 'Vos factures sont envoyées automatiquement sur le réseau officiel belge. 100% conforme.', color: '#667eea' },
-{ icon: '📄', title: 'PDF professionnel', desc: 'Générez des factures PDF élégantes en un clic. Parfait pour votre comptable.', color: '#a78bfa' },
-{ icon: '📋', title: 'Devis & Acomptes', desc: 'Créez des devis et gérez vos acomptes progressifs. Idéal pour les artisans et entrepreneurs.', color: '#34d399' },
-{ icon: '🇧🇪', title: '100% belge', desc: 'Conçu spécifiquement pour les indépendants belges. TVA 6%, 12%, 21% intégrée.', color: '#f59e0b' },
-{ icon: '💶', title: 'Déduction 120%', desc: 'Votre abonnement est déductible à 120% de vos impôts. BelFacture se rembourse tout seul !', color: '#34d399' },
-{ icon: '👥', title: 'Gestion clients', desc: 'Centralisez tous vos clients et retrouvez leur historique de facturation en un clin d\'œil.', color: '#667eea' }
-].map((f, i) => (
-<div key={i} style={{
-background: 'rgba(255,255,255,0.04)',
-border: '1px solid rgba(255,255,255,0.08)',
-borderRadius: '20px',
-padding: '28px'
-}}>
-<div style={{
-background: `${f.color}22`,
-border: `1px solid ${f.color}44`,
-borderRadius: '14px',
-width: '52px',
-height: '52px',
-display: 'flex',
-alignItems: 'center',
-justifyContent: 'center',
-fontSize: '24px',
-marginBottom: '16px'
-}}>{f.icon}</div>
-<h3 style={{ color: 'white', fontWeight: '700', marginBottom: '8px', fontSize: '16px' }}>{f.title}</h3>
-<p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>{f.desc}</p>
-</div>
-))}
-</div>
-</div>
+      <div className="rule" />
 
-{/* PRICING */}
-<div style={{
-maxWidth: '900px',
-margin: '0 auto',
-padding: '0 24px 100px',
-textAlign: 'center'
-}}>
-<h2 style={{ fontSize: '36px', fontWeight: '800', marginBottom: '16px' }}>
-Tarifs simples et transparents
-</h2>
-<p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '64px', fontSize: '16px' }}>
-Sans engagement, sans frais cachés
-</p>
+      {/* DISPONIBLE */}
+      <section id="aujourdhui" className="py-24 lg:py-32">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="flex items-end justify-between flex-wrap gap-6">
+            <div>
+              <div className="eyebrow">Disponible aujourd&apos;hui</div>
+              <h2 className="display mt-4" style={{ fontSize: 'clamp(44px,6.5vw,76px)' }}>Démarrez <span className="italic-accent">sans attendre.</span></h2>
+            </div>
+            <p className="max-w-md text-base leading-relaxed" style={{ color: 'var(--muted)' }}>Toutes les fondations sont prêtes. Vous organisez vos clients dès aujourd&apos;hui — Peppol viendra se greffer dessus.</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mt-14">
+            {[
+              { i: '📄', t: 'Factures PDF pro', d: 'Génération de factures au format européen avec vos coordonnées légales belges.' },
+              { i: '📋', t: 'Devis & acomptes', d: 'Acomptes progressifs (30/30/40 ou personnalisés). Transformez chaque acompte en facture en un clic.' },
+              { i: '👥', t: 'Gestion clients', d: 'Centralisez vos clients, leurs coordonnées et leur historique. Recherche instantanée.' },
+              { i: '🔐', t: 'Données sécurisées', d: 'Authentification chiffrée, base de données européenne (Supabase). Vos données restent vos données.' },
+              { i: '⚡', t: 'Rapide, partout', d: 'Application web responsive. Créez une facture depuis votre téléphone entre deux rendez-vous.' },
+              { i: '🏛️', t: 'Pensé pour la Belgique', d: "Mentions TVA, numéros d'entreprise, IBAN au format belge. Pas une app US traduite." },
+            ].map((f) => (
+              <div key={f.t} className="card p-7">
+                <div className="text-3xl">{f.i}</div>
+                <div className="display-light text-3xl mt-4">{f.t}</div>
+                <p className="mt-3 leading-relaxed text-sm" style={{ color: 'var(--muted)' }}>{f.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-{[
-{
-plan: 'Starter',
-prix: 'Gratuit',
-desc: 'Pour commencer',
-features: ['5 factures/mois', 'Export PDF', 'Gestion clients'],
-color: '#667eea',
-highlight: false
-},
-{
-plan: 'Solo',
-prix: '9€',
-desc: '/mois',
-features: ['Factures illimitées', 'Envoi Peppol officiel', 'Devis & acomptes', 'Export PDF', 'Support réactif'],
-color: '#a78bfa',
-highlight: true
-},
-{
-plan: 'Pro',
-prix: '19€',
-desc: '/mois',
-features: ['Tout Solo inclus', 'Multi-utilisateurs', 'Statistiques avancées', 'Support prioritaire'],
-color: '#34d399',
-highlight: false
-}
-].map((p, i) => (
-<div key={i} style={{
-background: p.highlight ? 'linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2))' : 'rgba(255,255,255,0.04)',
-border: p.highlight ? '2px solid rgba(167,139,250,0.5)' : '1px solid rgba(255,255,255,0.08)',
-borderRadius: '24px',
-padding: '36px 28px',
-position: 'relative'
-}}>
-{p.highlight && (
-<div style={{
-position: 'absolute',
-top: '-14px',
-left: '50%',
-transform: 'translateX(-50%)',
-background: 'linear-gradient(135deg, #667eea, #764ba2)',
-borderRadius: '20px',
-padding: '4px 16px',
-fontSize: '12px',
-fontWeight: '700',
-whiteSpace: 'nowrap'
-}}>
-⭐ Le plus populaire
-</div>
-)}
-<h3 style={{ color: p.color, fontWeight: '700', marginBottom: '8px' }}>{p.plan}</h3>
-<div style={{ fontSize: '40px', fontWeight: '900', color: 'white', marginBottom: '4px' }}>{p.prix}</div>
-<div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', marginBottom: '28px' }}>{p.desc}</div>
-{p.features.map((feat, j) => (
-<div key={j} style={{
-display: 'flex',
-alignItems: 'center',
-gap: '10px',
-marginBottom: '10px',
-textAlign: 'left'
-}}>
-<span style={{ color: p.color, fontSize: '16px' }}>✓</span>
-<span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>{feat}</span>
-</div>
-))}
-<Link href="/login" style={{
-display: 'block',
-marginTop: '24px',
-padding: '14px',
-background: p.highlight ? 'linear-gradient(135deg, #667eea, #764ba2)' : 'rgba(255,255,255,0.08)',
-border: p.highlight ? 'none' : '1px solid rgba(255,255,255,0.15)',
-borderRadius: '12px',
-color: 'white',
-textDecoration: 'none',
-fontWeight: '700',
-fontSize: '15px',
-boxShadow: p.highlight ? '0 4px 20px rgba(102,126,234,0.4)' : 'none'
-}}>
-Commencer →
-</Link>
-</div>
-))}
-</div>
-</div>
+      <div className="rule" />
 
-{/* FAQ */}
-<div style={{
-maxWidth: '700px',
-margin: '0 auto',
-padding: '0 24px 100px'
-}}>
-<h2 style={{ textAlign: 'center', fontSize: '36px', fontWeight: '800', marginBottom: '48px' }}>
-Questions fréquentes
-</h2>
-{[
-{ q: "C'est quoi Peppol ?", r: "Peppol est le réseau officiel européen de facturation électronique. Depuis janvier 2026, toutes les entreprises belges assujetties à la TVA doivent l'utiliser pour leurs factures B2B." },
-{ q: "Je ne suis pas tech, c'est compliqué ?", r: "Non ! Si vous savez envoyer un email, vous savez utiliser BelFacture. Inscription en 2 minutes, première facture en 60 secondes." },
-{ q: "Mon comptable peut accéder à mes factures ?", r: "Oui ! Vous pouvez lui envoyer les PDFs directement ou lui donner accès à votre compte." },
-{ q: "Je peux annuler quand je veux ?", r: "Oui, sans engagement et sans frais cachés. Vous annulez en un clic depuis votre profil." }
-].map((faq, i) => (
-<div key={i} style={{
-background: 'rgba(255,255,255,0.04)',
-border: '1px solid rgba(255,255,255,0.08)',
-borderRadius: '16px',
-padding: '24px',
-marginBottom: '12px'
-}}>
-<h4 style={{ color: 'white', fontWeight: '700', marginBottom: '8px', fontSize: '16px' }}>
-{faq.q}
-</h4>
-<p style={{ color: 'rgba(255,255,255,0.5)', margin: 0, fontSize: '14px', lineHeight: '1.6' }}>
-{faq.r}
-</p>
-</div>
-))}
-</div>
+      {/* ROADMAP */}
+      <section id="roadmap" className="py-24 lg:py-32" style={{ background: 'var(--bg-2)' }}>
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
+          <div className="tag"><span className="pulse" /> En route — accès anticipé</div>
+          <h2 className="display mt-5" style={{ fontSize: 'clamp(44px,6.5vw,76px)' }}>Vers la conformité <span className="italic-accent">totale.</span></h2>
+          <p className="mt-5 text-lg leading-relaxed max-w-xl" style={{ color: 'var(--muted)' }}>Voici la feuille de route. Les inscrits en accès anticipé seront activés en priorité, sans rien à faire.</p>
 
-{/* CTA FINAL */}
-<div style={{
-textAlign: 'center',
-padding: '80px 24px',
-borderTop: '1px solid rgba(255,255,255,0.06)'
-}}>
-<h2 style={{ fontSize: '40px', fontWeight: '900', marginBottom: '16px' }}>
-Prêt à vous mettre en conformité ?
-</h2>
-<p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '40px', fontSize: '18px' }}>
-Rejoignez les indépendants belges qui facturent sereinement
-</p>
-<Link href="/login" style={{
-background: 'linear-gradient(135deg, #667eea, #764ba2)',
-color: 'white',
-textDecoration: 'none',
-padding: '20px 48px',
-borderRadius: '16px',
-fontSize: '20px',
-fontWeight: '700',
-boxShadow: '0 8px 40px rgba(102,126,234,0.5)',
-display: 'inline-block'
-}}>
-Commencer gratuitement →
-</Link>
-<p style={{ color: 'rgba(255,255,255,0.3)', marginTop: '16px', fontSize: '13px' }}>
-🇧🇪 Fait en Belgique · Conforme Peppol 2026 · Sans engagement
-</p>
-</div>
+          <div className="mt-14 relative">
+            <div style={{ position: 'absolute', left: 19, top: 8, bottom: 8, width: 2, background: 'var(--line)' }} />
+            {[
+              { n: '1', tag: 'Envoi automatique', t: 'Connexion Peppol', d: 'Vos factures transmises automatiquement en UBL BIS 3.0 via un Access Point belge agréé.', status: 'En intégration', active: true },
+              { n: '2', tag: 'Réception', t: 'Boîte Peppol entrante', d: 'Recevez les factures de vos fournisseurs directement dans BelFacture.', status: 'Bientôt', active: false },
+              { n: '3', tag: 'Multi-taux', t: 'TVA 0 · 6 · 12 · 21', d: 'Tous les taux belges et régimes spéciaux calculés et codifiés correctement.', status: 'Bientôt', active: false },
+              { n: '4', tag: 'Légal', t: 'Numérotation séquentielle', d: 'Numérotation continue, conforme à la loi, avec archivage légal sur la durée requise.', status: 'Planifié', active: false },
+            ].map((s, i, arr) => (
+              <div key={s.n} className="relative flex gap-5" style={{ paddingBottom: i === arr.length - 1 ? 0 : 40 }}>
+                <div className="display-light shrink-0 grid place-items-center" style={{ width: 40, height: 40, borderRadius: 12, fontSize: 18, zIndex: 1, background: s.active ? 'var(--accent)' : 'var(--surface)', color: s.active ? 'var(--ink)' : 'var(--muted)', border: s.active ? 'none' : '1.5px solid var(--line)' }}>
+                  {s.n}
+                </div>
+                <div className="pt-1">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="eyebrow accent">{s.tag}</span>
+                    <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11, fontWeight: 600, borderRadius: 999, padding: '3px 10px', background: s.active ? 'rgba(219,110,68,.14)' : 'var(--surface)', color: s.active ? 'var(--accent)' : 'var(--muted)', border: s.active ? 'none' : '1px solid var(--line)' }}>
+                      {s.active && <span className="pulse" style={{ width: 6, height: 6 }} />}
+                      {s.status}
+                    </span>
+                  </div>
+                  <div className="display-light text-3xl mt-1.5">{s.t}</div>
+                  <p className="mt-2 leading-relaxed" style={{ color: 'var(--muted)' }}>{s.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-</div>
-)
+      <div className="rule" />
+
+      {/* TARIFS */}
+      <section id="tarifs" className="py-24 lg:py-32">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto">
+            <div className="eyebrow">Tarifs</div>
+            <h2 className="display mt-4" style={{ fontSize: 'clamp(44px,6.5vw,76px)' }}>Tarif simple, <span className="italic-accent">tarif honnête.</span></h2>
+            <p className="mt-6 text-lg leading-relaxed" style={{ color: 'var(--muted)' }}>Tarif anticipé verrouillé à vie pour les inscrits avant l&apos;activation publique de l&apos;envoi Peppol.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5 mt-14 items-stretch">
+            <div className="card p-8 flex flex-col">
+              <div className="eyebrow">Découverte</div>
+              <div className="display mt-2 text-6xl">0€</div>
+              <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Pour tester sans engagement</p>
+              <Link href="/login" className="btn-ghost text-sm mt-6 text-center">Créer un compte</Link>
+              <ul className="space-y-3 mt-8 text-sm" style={{ color: 'var(--muted)' }}>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> 5 factures PDF par mois</li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Gestion clients basique</li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Mentions légales belges</li>
+                <li className="flex gap-3 items-center opacity-50"><span className="check">—</span> Pas d&apos;envoi Peppol</li>
+              </ul>
+            </div>
+            <div className="card-pop p-8 flex flex-col">
+              <div className="flex items-center justify-between">
+                <div className="eyebrow" style={{ color: 'var(--ink)' }}>Solo</div>
+                <span style={{ background: 'var(--ink)', color: 'var(--accent)', borderRadius: 999, padding: '4px 11px', fontSize: 11, fontWeight: 600 }}>Le plus populaire</span>
+              </div>
+              <div className="display mt-2 text-6xl">12€<span className="text-xl" style={{ opacity: .7 }}>/mois</span></div>
+              <p className="text-sm mt-1" style={{ opacity: .8 }}>Verrouillé à vie pour les inscrits anticipés</p>
+              <a href="#waitlist" className="btn-on-accent text-sm mt-6 text-center" style={{ borderRadius: 13 }}>Réserver mon accès</a>
+              <ul className="space-y-3 mt-8 text-sm">
+                <li className="flex gap-3 items-center"><span className="check-ink">✓</span> Factures &amp; devis PDF illimités</li>
+                <li className="flex gap-3 items-center"><span className="check-ink">✓</span> Acomptes progressifs</li>
+                <li className="flex gap-3 items-center"><span className="check-ink">✓</span> Tous les taux de TVA</li>
+                <li className="flex gap-3 items-center"><span className="check-ink">✓</span> <strong>30 envois Peppol/mois</strong></li>
+                <li className="flex gap-3 items-center"><span className="check-ink">✓</span> Support email réactif</li>
+              </ul>
+            </div>
+            <div className="card p-8 flex flex-col">
+              <div className="eyebrow">Pro</div>
+              <div className="display mt-2 text-6xl">24€<span className="text-xl" style={{ color: 'var(--muted)' }}>/mois</span></div>
+              <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Indépendants actifs &amp; TPE</p>
+              <a href="#waitlist" className="btn-ghost text-sm mt-6 text-center">Réserver mon accès</a>
+              <ul className="space-y-3 mt-8 text-sm" style={{ color: 'var(--muted)' }}>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Tout Solo, en illimité</li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> <strong style={{ color: 'var(--text)' }}>150 envois Peppol/mois</strong></li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Réception Peppol entrante</li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Statistiques &amp; export comptable</li>
+                <li className="flex gap-3 items-center"><span className="check">✓</span> Multi-utilisateurs (jusqu&apos;à 3)</li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-center text-xs mt-8" style={{ color: 'var(--muted)' }}>Au-delà du volume inclus, chaque envoi Peppol supplémentaire est facturé 0,30 €. Sans engagement, annulation en un clic.</p>
+        </div>
+      </section>
+
+      <div className="rule" />
+
+      {/* FAQ */}
+      <section id="faq" className="py-24 lg:py-32" style={{ background: 'var(--bg-2)' }}>
+        <div className="max-w-3xl mx-auto px-6 lg:px-8">
+          <div className="text-center">
+            <div className="eyebrow">FAQ</div>
+            <h2 className="display mt-4" style={{ fontSize: 'clamp(42px,5.5vw,68px)' }}>Questions <span className="italic-accent">fréquentes.</span></h2>
+          </div>
+          <div className="mt-12 space-y-3">
+            {[
+              { q: "C'est quoi Peppol, concrètement ?", a: "Peppol est le réseau officiel européen de facturation électronique. En Belgique, depuis janvier 2026, toute facture B2B entre assujettis à la TVA doit transiter par ce réseau au format UBL, et non plus en simple PDF par email." },
+              { q: "Quand l'envoi Peppol sera-t-il disponible ?", a: "L'intégration est en cours avec un Access Point belge agréé. Les inscrits en accès anticipé recevront un email dès l'activation — leur abonnement bascule automatiquement sans rien à faire." },
+              { q: "Pourquoi m'inscrire maintenant ?", a: "Vous verrouillez le tarif anticipé à vie, vous utilisez dès aujourd'hui le générateur de factures et devis, et le jour où Peppol s'active votre compte est déjà prêt." },
+              { q: "Et si je dépasse mon volume mensuel ?", a: "Pas de blocage. Au-delà du volume inclus, chaque envoi supplémentaire est facturé 0,30 €. Vous pouvez aussi passer à un palier supérieur." },
+              { q: "Je peux annuler quand je veux ?", a: "Oui, sans frais et sans engagement. Vous annulez en un clic depuis votre profil." },
+            ].map((item) => (
+              <details key={item.q} className="card p-6">
+                <summary className="flex items-center justify-between gap-4">
+                  <span className="display-light text-2xl">{item.q}</span>
+                  <span className="plus text-2xl accent">+</span>
+                </summary>
+                <p className="mt-4 leading-relaxed text-sm" style={{ color: 'var(--muted)' }}>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WAITLIST */}
+      <section id="waitlist" className="py-24 lg:py-36 relative overflow-hidden" style={{ background: 'var(--accent)', color: 'var(--ink)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(rgba(21,17,13,0.07) 1px,transparent 1px)', backgroundSize: '4px 4px' }} />
+        <div className="max-w-3xl mx-auto px-6 lg:px-8 relative text-center">
+          <div className="eyebrow" style={{ color: 'rgba(21,17,13,.6)' }}>Accès anticipé</div>
+          <h2 className="display mt-4" style={{ fontSize: 'clamp(46px,7.5vw,90px)' }}>Verrouillez votre tarif. <span style={{ fontStyle: 'italic' }}>À vie.</span></h2>
+          <p className="mt-6 text-lg leading-relaxed" style={{ color: 'rgba(21,17,13,.8)' }}>
+            Inscrivez-vous maintenant : vous utilisez BelFacture dès aujourd&apos;hui, et l&apos;envoi Peppol s&apos;activera automatiquement le jour du lancement.
+          </p>
+          {submitted ? (
+            <div className="mt-10 display text-3xl">Inscrit ✓ On vous contacte dès l&apos;activation !</div>
+          ) : (
+            <form className="mt-10 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" onSubmit={handleWaitlist}>
+              <input
+                required type="email"
+                placeholder="votre@email.be"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="wl-input flex-1 rounded-xl px-5 py-4"
+                style={{ background: 'rgba(21,17,13,.07)', border: '1.5px solid rgba(21,17,13,.28)', color: 'var(--ink)', fontFamily: "'Figtree',sans-serif", fontSize: 15 }}
+              />
+              <button type="submit" className="btn-on-accent" disabled={sending}>
+                {sending ? '⏳ Envoi...' : 'Réserver ma place →'}
+              </button>
+            </form>
+          )}
+          <p className="text-xs mt-5" style={{ color: 'rgba(21,17,13,.6)' }}>Pas de spam. Un email à l&apos;activation, c&apos;est tout.</p>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ borderTop: '1.5px solid var(--line)' }}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-12 grid md:grid-cols-4 gap-10 text-sm" style={{ color: 'var(--muted)' }}>
+          <div>
+            <div className="flex items-center gap-2.5">
+              <Logo size={28} />
+              <span className="display text-xl" style={{ color: 'var(--text)' }}>BelFacture</span>
+            </div>
+            <p className="mt-4 leading-relaxed">Facturation belge, prête pour Peppol. Fait en Belgique.</p>
+          </div>
+          <div><div className="eyebrow">Produit</div><ul className="mt-4 space-y-2"><li><a href="#aujourdhui" className="hover:text-white">Fonctionnalités</a></li><li><a href="#roadmap" className="hover:text-white">Roadmap Peppol</a></li><li><a href="#tarifs" className="hover:text-white">Tarifs</a></li></ul></div>
+          <div><div className="eyebrow">Ressources</div><ul className="mt-4 space-y-2"><li><a href="#faq" className="hover:text-white">FAQ</a></li><li><a href="#" className="hover:text-white">Guide Peppol</a></li><li><a href="#" className="hover:text-white">Contact</a></li></ul></div>
+          <div><div className="eyebrow">Légal</div><ul className="mt-4 space-y-2"><li><a href="#" className="hover:text-white">Conditions</a></li><li><a href="#" className="hover:text-white">Confidentialité</a></li><li><a href="#" className="hover:text-white">Mentions légales</a></li></ul></div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 pb-10 text-xs" style={{ color: 'var(--muted)' }}>
+          BelFacture · 2026 · Les informations légales sont indicatives. Pour les obligations exactes, consultez le SPF Finances.
+        </div>
+      </footer>
+    </>
+  )
 }
