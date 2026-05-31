@@ -59,9 +59,15 @@ export default function Devis() {
     if (!user) return
     const numero = await genererNumeroDevis(user.id)
     const total = parseFloat(montantTotal)
-    const { data: devis, error } = await supabase.from('devis').insert([{ user_id: user.id, client_id: clientId, numero, description, montant_total: total, statut: 'en_attente' }]).select().single()
+    const { data: devis, error } = await supabase.from('devis').insert([{
+      user_id: user.id, client_id: clientId, numero,
+      description, montant_total: total, statut: 'en_attente'
+    }]).select().single()
     if (error) { setMessage('Erreur : ' + error.message); return }
-    await supabase.from('acomptes').insert(acomptes.map(a => ({ devis_id: devis.id, pourcentage: a.pourcentage, montant: (total * a.pourcentage / 100), statut: 'non_facture' })))
+    await supabase.from('acomptes').insert(acomptes.map(a => ({
+      devis_id: devis.id, pourcentage: a.pourcentage,
+      montant: (total * a.pourcentage / 100), statut: 'non_facture'
+    })))
     setMessage('Devis ' + numero + ' créé ✅')
     setDescription(''); setMontantTotal(''); setClientId('')
     chargerDonnees()
@@ -69,14 +75,25 @@ export default function Devis() {
 
   async function transformerEnFacture(devis: any, acompteIndex: number) {
     const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
     const { data: acomptesDevis } = await supabase.from('acomptes').select('*').eq('devis_id', devis.id)
     const acompte = acomptesDevis?.[acompteIndex]
     if (!acompte || acompte.statut === 'facture') { setMessage('Cet acompte a déjà été facturé !'); return }
     const year = new Date().getFullYear()
     const { count } = await supabase.from('factures').select('*', { count: 'exact', head: true }).eq('user_id', user.id).gte('created_at', `${year}-01-01`).lt('created_at', `${year + 1}-01-01`)
     const numero = `F-${year}-${String((count || 0) + 1).padStart(3, '0')}`
-    const { data: facture } = await supabase.from('factures').insert([{ user_id: user.id, client_id: devis.client_id, numero, total_htva: acompte.montant / 1.21, total_tva: acompte.montant - acompte.montant / 1.21, total_tvac: acompte.montant, statut: 'envoyee' }]).select().single()
-    await supabase.from('lignes_facture').insert([{ facture_id: facture.id, description: 'Acompte ' + acompte.pourcentage + '% — ' + devis.description, quantite: 1, prix_unitaire: acompte.montant / 1.21, taux_tva: 21 }])
+    const { data: facture } = await supabase.from('factures').insert([{
+      user_id: user.id, client_id: devis.client_id, numero,
+      total_htva: acompte.montant / 1.21,
+      total_tva: acompte.montant - acompte.montant / 1.21,
+      total_tvac: acompte.montant, statut: 'envoyee'
+    }]).select().single()
+    if (!facture) return
+    await supabase.from('lignes_facture').insert([{
+      facture_id: facture.id,
+      description: 'Acompte ' + acompte.pourcentage + '% — ' + devis.description,
+      quantite: 1, prix_unitaire: acompte.montant / 1.21, taux_tva: 21
+    }])
     await supabase.from('acomptes').update({ statut: 'facture', facture_id: facture.id }).eq('id', acompte.id)
     setMessage('Facture acompte ' + acompte.pourcentage + '% créée ✅')
     chargerDonnees()
@@ -91,8 +108,13 @@ export default function Devis() {
 
   async function getParams() {
     const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('parametres_entreprise').select('*').eq('user_id', user?.id).single()
-    return { nom: data?.nom_entreprise || 'Mon entreprise', tva: data?.numero_tva || '', rue: data?.adresse_rue || '', cp: data?.code_postal || '', ville: data?.ville || '', iban: data?.iban || '', bic: data?.bic || '' }
+    const { data } = await supabase.from('parametres_entreprise').select('*').eq('user_id', user?.id ?? '').single()
+    return {
+      nom: data?.nom_entreprise || 'Mon entreprise',
+      tva: data?.numero_tva || '', rue: data?.adresse_rue || '',
+      cp: data?.code_postal || '', ville: data?.ville || '',
+      iban: data?.iban || '', bic: data?.bic || ''
+    }
   }
 
   async function telechargerPDFDevis(devis: any) {
@@ -108,7 +130,9 @@ export default function Devis() {
     if (e.tva) doc.text('TVA : ' + e.tva, 20, 44)
     doc.setFontSize(22); doc.setTextColor(40, 30, 20); doc.setFont('helvetica', 'bold'); doc.text('DEVIS', 155, 22)
     doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 80, 60)
-    doc.text('N° : ' + devis.numero, 145, 31); doc.text('Date : ' + new Date().toLocaleDateString('fr-BE'), 145, 38); doc.text('Valable 30 jours', 145, 45)
+    doc.text('N° : ' + devis.numero, 145, 31)
+    doc.text('Date : ' + new Date().toLocaleDateString('fr-BE'), 145, 38)
+    doc.text('Valable 30 jours', 145, 45)
     doc.setDrawColor(219, 110, 68); doc.setLineWidth(0.8); doc.line(20, 58, 190, 58)
     doc.setFontSize(10); doc.setTextColor(130, 100, 80); doc.text('Établi pour :', 20, 70)
     doc.setFontSize(13); doc.setTextColor(40, 30, 20); doc.setFont('helvetica', 'bold'); doc.text(client?.nom || '', 20, 79)
@@ -163,7 +187,8 @@ export default function Devis() {
         <div style={{ ...card, marginBottom: 20 }}>
           <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Créer un devis</h3>
           <div style={{ display: 'grid', gap: 14, marginBottom: 14 }}>
-            <div><span style={lbl}>Client</span>
+            <div>
+              <span style={lbl}>Client</span>
               <select className="d-inp" value={clientId} onChange={e => setClientId(e.target.value)} style={{ ...inp, appearance: 'none' as any }}>
                 <option value="">Choisir un client...</option>
                 {clients.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
@@ -180,7 +205,8 @@ export default function Devis() {
             {acomptes.map((a, i) => (
               <div key={i} className="acompte-row">
                 <span style={{ color: 'rgba(242,235,220,0.5)', fontSize: 13, minWidth: 80 }}>Acompte {i + 1}</span>
-                <input type="number" value={a.pourcentage} onChange={e => { const na = [...acomptes]; na[i].pourcentage = parseFloat(e.target.value); setAcomptes(na) }} style={{ width: 70, padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(219,110,68,0.2)', borderRadius: 8, color: '#f2ebdc', fontSize: 14, outline: 'none', textAlign: 'center', fontFamily: "'Figtree',sans-serif" }} />
+                <input type="number" value={a.pourcentage} onChange={e => { const na = [...acomptes]; na[i].pourcentage = parseFloat(e.target.value); setAcomptes(na) }}
+                  style={{ width: 70, padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(219,110,68,0.2)', borderRadius: 8, color: '#f2ebdc', fontSize: 14, outline: 'none', textAlign: 'center', fontFamily: "'Figtree',sans-serif" }} />
                 <span style={{ color: 'rgba(242,235,220,0.4)', fontSize: 13 }}>%</span>
                 {montantTotal && <span style={{ marginLeft: 'auto', color: '#e8c56a', fontWeight: 700, fontSize: 16, fontFamily: "'Instrument Serif',serif" }}>{(parseFloat(montantTotal) * a.pourcentage / 100).toFixed(2)} €</span>}
               </div>
@@ -192,30 +218,31 @@ export default function Devis() {
 
         <div style={card}>
           <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Mes devis ({devisList.length})</h3>
-          {devisList.length === 0 ? <p style={{ color: 'rgba(242,235,220,.3)', textAlign: 'center', padding: 32 }}>Aucun devis pour le moment</p>
-            : devisList.map(devis => (
-              <div key={devis.id} className="devis-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                  <div>
-                    <p style={{ color: '#f2ebdc', fontWeight: 700, margin: '0 0 3px', fontSize: 16 }}>{devis.numero}</p>
-                    <p style={{ color: 'rgba(242,235,220,.45)', margin: 0, fontSize: 13 }}>{devis.clients?.nom} — {devis.description}</p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontFamily: "'Instrument Serif',serif", color: '#e8c56a', fontWeight: 400, fontSize: 24 }}>{devis.montant_total} €</span>
-                    <button className="pdf-btn" onClick={() => telechargerPDFDevis(devis)} disabled={pdfEnCours === devis.id}>{pdfEnCours === devis.id ? '⏳' : '📄 PDF'}</button>
-                    <button className="del-btn" onClick={() => supprimerDevis(devis.id)}>🗑️</button>
-                  </div>
+          {devisList.length === 0 ? (
+            <p style={{ color: 'rgba(242,235,220,.3)', textAlign: 'center', padding: 32 }}>Aucun devis pour le moment</p>
+          ) : devisList.map(devis => (
+            <div key={devis.id} className="devis-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                <div>
+                  <p style={{ color: '#f2ebdc', fontWeight: 700, margin: '0 0 3px', fontSize: 16 }}>{devis.numero}</p>
+                  <p style={{ color: 'rgba(242,235,220,.45)', margin: 0, fontSize: 13 }}>{devis.clients?.nom} — {devis.description}</p>
                 </div>
-                <p style={{ color: 'rgba(242,235,220,.3)', fontSize: 12, margin: '0 0 12px' }}>Cliquez sur un acompte quand le client a payé pour générer la facture.</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
-                  {[0, 1, 2].map(i => (
-                    <button key={i} className="facture-btn" onClick={() => transformerEnFacture(devis, i)}>
-                      Acompte {i + 1}<br /><span style={{ opacity: .7 }}>{acomptes[i]?.pourcentage || '—'}%</span><br />→ Créer facture
-                    </button>
-                  ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontFamily: "'Instrument Serif',serif", color: '#e8c56a', fontWeight: 400, fontSize: 24 }}>{devis.montant_total} €</span>
+                  <button className="pdf-btn" onClick={() => telechargerPDFDevis(devis)} disabled={pdfEnCours === devis.id}>{pdfEnCours === devis.id ? '⏳' : '📄 PDF'}</button>
+                  <button className="del-btn" onClick={() => supprimerDevis(devis.id)}>🗑️</button>
                 </div>
               </div>
-            ))}
+              <p style={{ color: 'rgba(242,235,220,.3)', fontSize: 12, margin: '0 0 12px' }}>Cliquez sur un acompte quand le client a payé pour générer la facture.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+                {[0, 1, 2].map(i => (
+                  <button key={i} className="facture-btn" onClick={() => transformerEnFacture(devis, i)}>
+                    Acompte {i + 1}<br /><span style={{ opacity: .7 }}>{acomptes[i]?.pourcentage || '—'}%</span><br />→ Créer facture
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

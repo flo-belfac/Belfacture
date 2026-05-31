@@ -53,13 +53,19 @@ export default function Clients() {
 
   async function ajouterClient() {
     const { data: { user } } = await supabase.auth.getUser()
-    const { error } = await supabase.from('clients').insert([{ nom, email, numero_tva: tva, identifiant_peppol: peppol, adresse, user_id: user.id }])
+    if (!user) return
+    const { error } = await supabase.from('clients').insert([{
+      nom, email, numero_tva: tva, identifiant_peppol: peppol, adresse, user_id: user.id
+    }])
     if (error) { setMessage('Erreur : ' + error.message) }
     else { setMessage('Client ajouté ✅'); viderFormulaire(); chargerClients() }
   }
 
   async function modifierClient() {
-    const { error } = await supabase.from('clients').update({ nom, email, numero_tva: tva, identifiant_peppol: peppol, adresse }).eq('id', clientEnEdition.id)
+    if (!clientEnEdition) return
+    const { error } = await supabase.from('clients').update({
+      nom, email, numero_tva: tva, identifiant_peppol: peppol, adresse
+    }).eq('id', clientEnEdition.id)
     if (error) { setMessage('Erreur : ' + error.message) }
     else { setMessage('Client modifié ✅'); viderFormulaire(); chargerClients() }
   }
@@ -87,12 +93,21 @@ export default function Clients() {
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
         <h1 style={{ fontFamily: "'Instrument Serif',serif", fontSize: 52, fontWeight: 400, color: '#f2ebdc', margin: '0 0 40px', letterSpacing: '-0.01em' }}>Mes clients</h1>
 
-        <div style={{ background: modeEdition ? 'rgba(219,110,68,0.07)' : 'rgba(33,26,19,0.6)', backdropFilter: 'blur(20px)', border: modeEdition ? '1.5px solid rgba(219,110,68,0.4)' : '1px solid rgba(219,110,68,0.15)', borderRadius: 20, padding: 28, marginBottom: 20 }}>
+        <div style={{
+          background: modeEdition ? 'rgba(219,110,68,0.07)' : 'rgba(33,26,19,0.6)',
+          backdropFilter: 'blur(20px)',
+          border: modeEdition ? '1.5px solid rgba(219,110,68,0.4)' : '1px solid rgba(219,110,68,0.15)',
+          borderRadius: 20, padding: 28, marginBottom: 20,
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}>
             <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: 0 }}>
               {modeEdition ? '✏️ Modifier — ' + clientEnEdition.nom : 'Ajouter un client'}
             </h3>
-            {modeEdition && <button onClick={viderFormulaire} style={{ background: 'none', border: '1px solid rgba(242,235,220,0.2)', borderRadius: 8, color: 'rgba(242,235,220,0.5)', padding: '4px 12px', fontSize: 12, cursor: 'pointer', fontFamily: "'Figtree',sans-serif" }}>Annuler</button>}
+            {modeEdition && (
+              <button onClick={viderFormulaire} style={{ background: 'none', border: '1px solid rgba(242,235,220,0.2)', borderRadius: 8, color: 'rgba(242,235,220,0.5)', padding: '4px 12px', fontSize: 12, cursor: 'pointer', fontFamily: "'Figtree',sans-serif" }}>
+                Annuler
+              </button>
+            )}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
             <div><span style={lbl}>Nom</span><input className="c-inp" style={inp} placeholder="Dupont Consulting" value={nom} onChange={e => setNom(e.target.value)} /></div>
@@ -111,7 +126,9 @@ export default function Clients() {
         </div>
 
         <div style={{ background: 'rgba(33,26,19,0.6)', backdropFilter: 'blur(20px)', border: '1px solid rgba(219,110,68,0.15)', borderRadius: 20, padding: 28 }}>
-          <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Liste des clients ({clients.length})</h3>
+          <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>
+            Liste des clients ({clients.length})
+          </h3>
           {clients.length === 0 ? (
             <p style={{ color: 'rgba(242,235,220,.3)', textAlign: 'center', padding: 32 }}>Aucun client pour le moment</p>
           ) : clients.map(client => (
