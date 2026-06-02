@@ -18,6 +18,7 @@ export default function Nav() {
     { href: '/clients', label: 'Clients' },
     { href: '/factures', label: 'Factures' },
     { href: '/devis', label: 'Devis' },
+    { href: '/abonnement', label: '⭐ Abonnement' },
     { href: '/parametres', label: '⚙️ Paramètres' },
   ]
 
