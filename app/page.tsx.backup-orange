@@ -28,7 +28,7 @@ export default function HomePage() {
   return (
     <>
       <style>{`
-        :root{--bg:#0d1117;--bg-2:#111820;--surface:#1e2736;--line:#1e3a5f;--text:#e8f0fe;--muted:#7a92b0;--accent:#3b82f6;--ink:#0d1117;}
+        :root{--bg:#15110d;--bg-2:#1b160f;--surface:#211a13;--line:#332a1f;--text:#f2ebdc;--muted:#9a8e7c;--accent:#db6e44;--ink:#15110d;}
         body{background:var(--bg);color:var(--text);font-family:'Figtree',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
         .display{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-0.01em;line-height:1.0;}
         .display-light{font-family:'Instrument Serif',serif;font-weight:400;}
