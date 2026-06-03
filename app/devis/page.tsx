@@ -8,7 +8,7 @@ const inp = {
   width: '100%', padding: '13px 16px',
   background: 'rgba(255,255,255,0.05)',
   border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: '12px', color: '#f2ebdc',
+  borderRadius: '12px', color: '#e8f0fe',
   fontSize: '15px', outline: 'none',
   boxSizing: 'border-box' as const,
   fontFamily: "'Figtree', sans-serif",
@@ -17,13 +17,13 @@ const inp = {
 const lbl = {
   display: 'block', fontSize: '11px', fontWeight: 600,
   letterSpacing: '0.12em', textTransform: 'uppercase' as const,
-  color: 'rgba(242,235,220,0.45)', marginBottom: '6px',
+  color: 'rgba(232,240,254,0.45)', marginBottom: '6px',
 }
 
 const card = {
-  background: 'rgba(33,26,19,0.6)',
+  background: 'rgba(30,39,54,0.6)',
   backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(219,110,68,0.15)',
+  border: '1px solid rgba(59,130,246,0.15)',
   borderRadius: 20, padding: 28,
 }
 
@@ -166,26 +166,26 @@ export default function Devis() {
   const totalPct = acomptes.reduce((s, a) => s + a.pourcentage, 0)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'radial-gradient(120% 90% at 30% 0%, #241a12 0%, #15110d 55%)', fontFamily: "'Figtree', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'radial-gradient(120% 90% at 30% 0%, #111820 0%, #0d1117 55%)', fontFamily: "'Figtree', sans-serif" }}>
       <style>{`
-        .d-inp:focus{border-color:#db6e44 !important;}
-        .d-inp option{background:#211a13;color:#f2ebdc;}
-        .acompte-row{background:rgba(33,26,19,0.5);border:1px solid rgba(219,110,68,0.12);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-        .devis-card{background:rgba(33,26,19,0.5);border:1.5px solid rgba(219,110,68,0.12);border-radius:16px;padding:22px;margin-bottom:14px;transition:border-color .2s;}
-        .devis-card:hover{border-color:rgba(219,110,68,0.35);}
-        .facture-btn{padding:11px 8px;background:rgba(219,110,68,0.1);border:1px solid rgba(219,110,68,0.25);border-radius:10px;color:#db6e44;font-size:12px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;transition:all .2s;line-height:1.4;}
-        .facture-btn:hover{background:rgba(219,110,68,0.2);}
-        .pdf-btn{background:rgba(126,211,168,0.1);border:1px solid rgba(126,211,168,0.25);border-radius:8px;color:#7ed3a8;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;}
-        .del-btn{background:rgba(240,138,99,0.08);border:1px solid rgba(240,138,99,0.2);border-radius:8px;color:#f08a63;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'Figtree',sans-serif;}
+        .d-inp:focus{border-color:#3b82f6 !important;}
+        .d-inp option{background:#211a13;color:#e8f0fe;}
+        .acompte-row{background:rgba(30,39,54,0.5);border:1px solid rgba(59,130,246,0.12);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+        .devis-card{background:rgba(30,39,54,0.5);border:1.5px solid rgba(59,130,246,0.12);border-radius:16px;padding:22px;margin-bottom:14px;transition:border-color .2s;}
+        .devis-card:hover{border-color:rgba(59,130,246,0.35);}
+        .facture-btn{padding:11px 8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:10px;color:#3b82f6;font-size:12px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;transition:all .2s;line-height:1.4;}
+        .facture-btn:hover{background:rgba(59,130,246,0.2);}
+        .pdf-btn{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);border-radius:8px;color:#4ade80;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Figtree',sans-serif;}
+        .del-btn{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px;color:#f87171;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'Figtree',sans-serif;}
       `}</style>
 
       <Nav />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
-        <h1 style={{ fontFamily: "'Instrument Serif',serif", fontSize: 52, fontWeight: 400, color: '#f2ebdc', margin: '0 0 40px', letterSpacing: '-0.01em' }}>Devis &amp; Acomptes</h1>
+        <h1 style={{ fontFamily: "'Instrument Serif',serif", fontSize: 52, fontWeight: 400, color: '#e8f0fe', margin: '0 0 40px', letterSpacing: '-0.01em' }}>Devis &amp; Acomptes</h1>
 
         <div style={{ ...card, marginBottom: 20 }}>
-          <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Créer un devis</h3>
+          <h3 style={{ color: '#3b82f6', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Créer un devis</h3>
           <div style={{ display: 'grid', gap: 14, marginBottom: 14 }}>
             <div>
               <span style={lbl}>Client</span>
@@ -200,40 +200,40 @@ export default function Devis() {
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <span style={lbl}>Répartition des acomptes</span>
-              <span style={{ fontSize: 12, color: totalPct === 100 ? '#7ed3a8' : '#f08a63', fontWeight: 600 }}>Total : {totalPct}% {totalPct === 100 ? '✓' : '⚠️'}</span>
+              <span style={{ fontSize: 12, color: totalPct === 100 ? '#4ade80' : '#f87171', fontWeight: 600 }}>Total : {totalPct}% {totalPct === 100 ? '✓' : '⚠️'}</span>
             </div>
             {acomptes.map((a, i) => (
               <div key={i} className="acompte-row">
-                <span style={{ color: 'rgba(242,235,220,0.5)', fontSize: 13, minWidth: 80 }}>Acompte {i + 1}</span>
+                <span style={{ color: 'rgba(232,240,254,0.5)', fontSize: 13, minWidth: 80 }}>Acompte {i + 1}</span>
                 <input type="number" value={a.pourcentage} onChange={e => { const na = [...acomptes]; na[i].pourcentage = parseFloat(e.target.value); setAcomptes(na) }}
-                  style={{ width: 70, padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(219,110,68,0.2)', borderRadius: 8, color: '#f2ebdc', fontSize: 14, outline: 'none', textAlign: 'center', fontFamily: "'Figtree',sans-serif" }} />
-                <span style={{ color: 'rgba(242,235,220,0.4)', fontSize: 13 }}>%</span>
-                {montantTotal && <span style={{ marginLeft: 'auto', color: '#e8c56a', fontWeight: 700, fontSize: 16, fontFamily: "'Instrument Serif',serif" }}>{(parseFloat(montantTotal) * a.pourcentage / 100).toFixed(2)} €</span>}
+                  style={{ width: 70, padding: '8px 12px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 8, color: '#e8f0fe', fontSize: 14, outline: 'none', textAlign: 'center', fontFamily: "'Figtree',sans-serif" }} />
+                <span style={{ color: 'rgba(232,240,254,0.4)', fontSize: 13 }}>%</span>
+                {montantTotal && <span style={{ marginLeft: 'auto', color: '#60a5fa', fontWeight: 700, fontSize: 16, fontFamily: "'Instrument Serif',serif" }}>{(parseFloat(montantTotal) * a.pourcentage / 100).toFixed(2)} €</span>}
               </div>
             ))}
           </div>
-          <button onClick={creerDevis} style={{ width: '100%', padding: 16, background: '#db6e44', border: 'none', borderRadius: 13, color: '#15110d', fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: '0 8px 24px rgba(219,110,68,.3)', fontFamily: "'Figtree',sans-serif" }}>Créer le devis</button>
-          {message && <p style={{ marginTop: 12, textAlign: 'center', color: message.includes('Erreur') || message.includes('déjà') ? '#f08a63' : '#7ed3a8', fontSize: 14, fontWeight: 600 }}>{message}</p>}
+          <button onClick={creerDevis} style={{ width: '100%', padding: 16, background: '#3b82f6', border: 'none', borderRadius: 13, color: '#0d1117', fontSize: 16, fontWeight: 700, cursor: 'pointer', boxShadow: '0 8px 24px rgba(59,130,246,.3)', fontFamily: "'Figtree',sans-serif" }}>Créer le devis</button>
+          {message && <p style={{ marginTop: 12, textAlign: 'center', color: message.includes('Erreur') || message.includes('déjà') ? '#f87171' : '#4ade80', fontSize: 14, fontWeight: 600 }}>{message}</p>}
         </div>
 
         <div style={card}>
-          <h3 style={{ color: '#db6e44', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Mes devis ({devisList.length})</h3>
+          <h3 style={{ color: '#3b82f6', fontSize: 11, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', margin: '0 0 22px' }}>Mes devis ({devisList.length})</h3>
           {devisList.length === 0 ? (
-            <p style={{ color: 'rgba(242,235,220,.3)', textAlign: 'center', padding: 32 }}>Aucun devis pour le moment</p>
+            <p style={{ color: 'rgba(232,240,254,.3)', textAlign: 'center', padding: 32 }}>Aucun devis pour le moment</p>
           ) : devisList.map(devis => (
             <div key={devis.id} className="devis-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                 <div>
-                  <p style={{ color: '#f2ebdc', fontWeight: 700, margin: '0 0 3px', fontSize: 16 }}>{devis.numero}</p>
-                  <p style={{ color: 'rgba(242,235,220,.45)', margin: 0, fontSize: 13 }}>{devis.clients?.nom} — {devis.description}</p>
+                  <p style={{ color: '#e8f0fe', fontWeight: 700, margin: '0 0 3px', fontSize: 16 }}>{devis.numero}</p>
+                  <p style={{ color: 'rgba(232,240,254,.45)', margin: 0, fontSize: 13 }}>{devis.clients?.nom} — {devis.description}</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontFamily: "'Instrument Serif',serif", color: '#e8c56a', fontWeight: 400, fontSize: 24 }}>{devis.montant_total} €</span>
+                  <span style={{ fontFamily: "'Instrument Serif',serif", color: '#60a5fa', fontWeight: 400, fontSize: 24 }}>{devis.montant_total} €</span>
                   <button className="pdf-btn" onClick={() => telechargerPDFDevis(devis)} disabled={pdfEnCours === devis.id}>{pdfEnCours === devis.id ? '⏳' : '📄 PDF'}</button>
                   <button className="del-btn" onClick={() => supprimerDevis(devis.id)}>🗑️</button>
                 </div>
               </div>
-              <p style={{ color: 'rgba(242,235,220,.3)', fontSize: 12, margin: '0 0 12px' }}>Cliquez sur un acompte quand le client a payé pour générer la facture.</p>
+              <p style={{ color: 'rgba(232,240,254,.3)', fontSize: 12, margin: '0 0 12px' }}>Cliquez sur un acompte quand le client a payé pour générer la facture.</p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
                 {[0, 1, 2].map(i => (
                   <button key={i} className="facture-btn" onClick={() => transformerEnFacture(devis, i)}>
