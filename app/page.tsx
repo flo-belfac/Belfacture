@@ -10,11 +10,33 @@ export default function HomePage() {
   const [sending, setSending] = useState(false)
 
   const Logo = ({ size = 36 }: { size?: number }) => (
-    <span className="logo-b" style={{ width: size, height: size, borderRadius: size * 0.32 }}>
-      <span className="ring" />
-      <span className="ring" />
-      <span className="core" />
-    </span>
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+      <style>{`
+        @keyframes docFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+        @keyframes line1{0%{stroke-dashoffset:14}100%{stroke-dashoffset:0}}
+        @keyframes line2{0%{stroke-dashoffset:10}100%{stroke-dashoffset:0}}
+        @keyframes line3{0%{stroke-dashoffset:7}100%{stroke-dashoffset:0}}
+        .doc-wrap{animation:docFloat 3s ease-in-out infinite;}
+        .l1{stroke-dasharray:14;stroke-dashoffset:0;animation:line1 1.2s ease-out .2s both;}
+        .l2{stroke-dasharray:10;stroke-dashoffset:0;animation:line2 1.2s ease-out .5s both;}
+        .l3{stroke-dasharray:7;stroke-dashoffset:0;animation:line3 1.2s ease-out .8s both;}
+      `}</style>
+      <g className="doc-wrap">
+        <rect x="4" y="2" width="22" height="28" rx="4" fill="#3b82f6"/>
+        <rect x="4" y="2" width="22" height="28" rx="4" fill="url(#dg2)" opacity=".3"/>
+        <path d="M22 2v6h6" stroke="#93c5fd" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+        <rect x="22" y="2" width="6" height="6" rx="0" fill="#60a5fa" opacity=".7"/>
+        <line x1="10" y1="16" x2="24" y2="16" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l1"/>
+        <line x1="10" y1="21" x2="20" y2="21" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l2"/>
+        <line x1="10" y1="26" x2="17" y2="26" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l3"/>
+        <defs>
+          <linearGradient id="dg2" x1="4" y1="2" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+            <stop stopColor="white"/>
+            <stop offset="1" stopColor="white" stopOpacity="0"/>
+          </linearGradient>
+        </defs>
+      </g>
+    </svg>
   )
 
   async function handleWaitlist(e: React.FormEvent) {

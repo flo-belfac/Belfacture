@@ -4,6 +4,38 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 
+function LogoDoc({ size = 36 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <style>{`
+        @keyframes docFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+        @keyframes line1{0%{stroke-dashoffset:14}100%{stroke-dashoffset:0}}
+        @keyframes line2{0%{stroke-dashoffset:10}100%{stroke-dashoffset:0}}
+        @keyframes line3{0%{stroke-dashoffset:7}100%{stroke-dashoffset:0}}
+        .doc-wrap{animation:docFloat 3s ease-in-out infinite;}
+        .l1{stroke-dasharray:14;stroke-dashoffset:0;animation:line1 1.2s ease-out .2s both;}
+        .l2{stroke-dasharray:10;stroke-dashoffset:0;animation:line2 1.2s ease-out .5s both;}
+        .l3{stroke-dasharray:7;stroke-dashoffset:0;animation:line3 1.2s ease-out .8s both;}
+      `}</style>
+      <g className="doc-wrap">
+        <rect x="4" y="2" width="22" height="28" rx="4" fill="#3b82f6"/>
+        <rect x="4" y="2" width="22" height="28" rx="4" fill="url(#dg)" opacity=".3"/>
+        <path d="M22 2v6h6" stroke="#93c5fd" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+        <rect x="22" y="2" width="6" height="6" rx="0 4 0 0" fill="#60a5fa" opacity=".7"/>
+        <line x1="10" y1="16" x2="24" y2="16" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l1"/>
+        <line x1="10" y1="21" x2="20" y2="21" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l2"/>
+        <line x1="10" y1="26" x2="17" y2="26" stroke="#bfdbfe" strokeWidth="2" strokeLinecap="round" className="l3"/>
+        <defs>
+          <linearGradient id="dg" x1="4" y1="2" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+            <stop stopColor="white"/>
+            <stop offset="1" stopColor="white" stopOpacity="0"/>
+          </linearGradient>
+        </defs>
+      </g>
+    </svg>
+  )
+}
+
 export default function Nav() {
   const [menuOuvert, setMenuOuvert] = useState(false)
   const pathname = usePathname()
@@ -44,11 +76,8 @@ export default function Nav() {
 
       <nav style={{ background: 'rgba(13,17,23,.88)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(219,110,68,.12)', padding: '0 24px', height: 60, display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <span className="logo-b" style={{ width: 36, height: 36, borderRadius: 11 }}>
-            <span className="ring" /><span className="ring" />
-            <span className="core" />
-          </span>
-          <span style={{ fontFamily: "'Instrument Serif',serif", color: '#f2ebdc', fontSize: 22, fontWeight: 400 }}>BelFacture</span>
+          <LogoDoc size={36} />
+          <span style={{ fontFamily: "'Instrument Serif',serif", color: '#e8f0fe', fontSize: 22, fontWeight: 400 }}>BelFacture</span>
         </Link>
 
         {/* Desktop */}
