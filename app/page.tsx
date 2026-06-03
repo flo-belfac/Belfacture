@@ -324,7 +324,7 @@ export default function HomePage() {
           </div>
           <div><div className="eyebrow">Produit</div><ul className="mt-4 space-y-2"><li><a href="#aujourdhui" className="hover:text-white">Fonctionnalités</a></li><li><a href="#roadmap" className="hover:text-white">Roadmap Peppol</a></li><li><a href="#tarifs" className="hover:text-white">Tarifs</a></li></ul></div>
           <div><div className="eyebrow">Ressources</div><ul className="mt-4 space-y-2"><li><a href="#faq" className="hover:text-white">FAQ</a></li><li><a href="#" className="hover:text-white">Guide Peppol</a></li><li><a href="#" className="hover:text-white">Contact</a></li></ul></div>
-          <div><div className="eyebrow">Légal</div><ul className="mt-4 space-y-2"><li><a href="#" className="hover:text-white">Conditions</a></li><li><a href="#" className="hover:text-white">Confidentialité</a></li><li><a href="#" className="hover:text-white">Mentions légales</a></li></ul></div>
+          <div><div className="eyebrow">Légal</div><ul className="mt-4 space-y-2"><li><a href="/conditions" className="hover:text-white">Conditions</a></li><li><a href="/confidentialite" className="hover:text-white">Confidentialité</a></li><li><a href="/mentions-legales" className="hover:text-white">Mentions légales</a></li></ul></div>
         </div>
         <div className="max-w-6xl mx-auto px-6 lg:px-8 pb-10 text-xs" style={{ color: 'var(--muted)' }}>
           BelFacture · 2026 · Les informations légales sont indicatives. Pour les obligations exactes, consultez le SPF Finances.
