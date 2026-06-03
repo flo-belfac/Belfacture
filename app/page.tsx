@@ -80,8 +80,8 @@ export default function HomePage() {
             <a href="#faq" className="hover:text-white transition">FAQ</a>
           </nav>
           <div className="flex items-center gap-2">
-            <Link href="/login" className="text-sm font-medium hidden sm:inline-block px-3 py-2" style={{ color: 'var(--muted)' }}>Se connecter</Link>
-            <a href="#waitlist" className="btn-primary text-sm">Réserver</a>
+            <Link href="/login" className="text-sm font-medium px-3 py-2" style={{ color: 'var(--muted)' }}>Se connecter</Link>
+            <Link href="/login" className="btn-primary text-sm">S'inscrire</Link>
           </div>
         </div>
       </header>
